@@ -1,0 +1,25 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.7  # This is just an example; use the appropriate image for your project
+    steps:
+      - checkout  # Checks out your source code from GitHub
+      - run:
+          name: "Install dependencies"
+          command: |
+            pip install -r requirements.txt  # Replace with your project dependencies
+      - run:
+          name: "Run tests"
+          command: |
+            python -m unittest discover  # Replace with your test command
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build:
+          filters:
+            tags:
+              - "v*"  # This ensures the build is triggered for tags like v1.x.x, v2.0.0, etc.
