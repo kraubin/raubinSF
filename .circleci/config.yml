@@ -18,7 +18,5 @@ jobs:
 workflows:
   version: 2
   tag-workflow:
-    when:
-      tag: /^v\d+\.\d+\.\d+/
     jobs:
       - build
