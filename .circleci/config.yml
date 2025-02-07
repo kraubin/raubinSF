@@ -3,28 +3,31 @@ version: 2.1
 executors:
   java-executor:
     docker:
-      - image: cimg/openjdk:17.0  # ✅ Use the correct OpenJDK image
+      - image: cimg/gradle:8.12.1  # Use Gradle Docker image
     working_directory: ~/repo
 
 jobs:
   build:
     executor: java-executor
     steps:
-      - checkout
-      - run:
-          name: Set up Gradle
-          command: |
-            wget https://services.gradle.org/distributions/gradle-8.12.1-bin.zip
-            unzip gradle-8.12.1-bin.zip
-            export PATH=$PATH:$HOME/gradle-8.12.1/bin
+      - checkout  # Check out the code
+      - restore_cache:
+          keys:
+            - gradle-cache-{{ checksum "build.gradle" }}
+            - gradle-cache-
       - run:
           name: Run Tests
-          command: ./gradlew test
+          command: ./gradlew test  # Run Gradle tests
+      - save_cache:
+          key: gradle-cache-{{ checksum "build.gradle" }}
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
 
 workflows:
   version: 2
   tag-workflow:
     when:
-      tag: /^v\d+\.\d+\.\d+/  # This will trigger for any tags like v1.0.0, v2.3.4, etc.
+      tag: /^v\d+\.\d+\.\d+/  # This will trigger for tags like v1.0.0, v2.3.4, etc.
     jobs:
       - build
