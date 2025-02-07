@@ -12,6 +12,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Grant execute permissions to gradlew
+          command: chmod +x gradlew
+      - run:
           name: Run Tests
           command: ./gradlew test
 
