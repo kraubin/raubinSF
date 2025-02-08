@@ -3,23 +3,30 @@ version: 2.1
 executors:
   java-executor:
     docker:
-      - image: gradle:8.12.1-jdk17  # Switch to another image
-    working_directory: ~/repo
+      - image: gradle:8.12.1-jdk17  # Using Gradle image with Java 17
+    working_directory: ~/repo  # Set working directory for the repo
 
 jobs:
   build:
     executor: java-executor
     steps:
-      - checkout
+      - checkout  # Checkout the code from the repo
       - run:
           name: Grant execute permissions to gradlew
-          command: chmod +x gradlew
+          command: chmod +x gradlew  # Allow gradlew to execute
       - run:
           name: Run Tests
-          command: ./gradlew test
+          command: ./gradlew test  # Run the tests using Gradle
+      - run:
+          name: Log into Argo CD and sync the application
+          command: |
+            # Log into ArgoCD using environment variables for credentials
+            argocd login $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PASSWORD --insecure
+            # Sync the application
+            argocd app sync salesforce-auto
 
 workflows:
   version: 2
-  tag-workflow:
+  build-and-sync:
     jobs:
-      - build
+      - build  # Run the build job
