@@ -3,7 +3,7 @@ version: 2.1
 executors:
   java-executor:
     docker:
-      - image: gradle:8.12.1-jdk17  # Gradle with Java 17
+      - image: gradle:8.12.1-jdk17  # Using Gradle image with Java 17
     working_directory: ~/repo  # Set working directory for the repo
 
 jobs:
@@ -13,19 +13,25 @@ jobs:
       - checkout  # Checkout the code from the repo
       - run:
           name: Grant execute permissions to gradlew
-          command: chmod +x gradlew
+          command: chmod +x gradlew  # Allow gradlew to execute
       - run:
           name: Run Tests
           command: ./gradlew clean test  # Run the tests using Gradle
       - run:
           name: Log into Argo CD and sync the application
           command: |
+            # Log into ArgoCD using environment variables
             argocd login $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PASSWORD --insecure
-            argocd app sync salesforce-auto --wait
+            # Sync the application
+            argocd app sync salesforce-auto
+            # Wait for the app to be in a healthy state
+            argocd app wait salesforce-auto --health
       - run:
           name: Upload Test Results to Jira Xray
           command: |
-            apt-get update && apt-get install -y curl jq  # Install necessary tools
+            # Install curl and jq to interact with Jira API
+            apt-get update && apt-get install -y curl jq
+            # Set Jira Xray API details
             JIRA_URL="https://your-domain.atlassian.net"
             API_TOKEN=$JIRA_API_TOKEN
             USER_EMAIL=$JIRA_USER_EMAIL
