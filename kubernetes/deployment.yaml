@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sfa-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sfa
+  template:
+    metadata:
+      labels:
+        app: sfa
+    spec:
+      containers:
+        - name: sfa-container
+          image: myusername/my-image:latest
+          ports:
+            - containerPort: 8080

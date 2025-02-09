@@ -2,7 +2,6 @@ package steps;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
-import static org.junit.Assert.*;
 
 public class LoginSteps {
 
@@ -22,6 +21,5 @@ public class LoginSteps {
     public void i_should_be_redirected_to_the_home_page() {
         // Here, we verify that the user is redirected to the home page.
         System.out.println("Redirection to home page");
-        assertTrue(true); // Add your actual verification here
     }
 }

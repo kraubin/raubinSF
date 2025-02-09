@@ -24,6 +24,25 @@ jobs:
             argocd login $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PASSWORD --insecure
             # Sync the application
             argocd app sync salesforce-auto
+      - run:
+          name: Upload test results to Jira Xray
+          command: |
+            # Install curl and jq to interact with Jira API
+            apt-get update && apt-get install -y curl jq
+            # Set Jira Xray API details
+            JIRA_URL="https://your-domain.atlassian.net"
+            API_TOKEN=$JIRA_API_TOKEN
+            USER_EMAIL=$JIRA_USER_EMAIL
+            PROJECT_KEY="YOUR_PROJECT_KEY"
+            TEST_EXECUTION_KEY="YOUR_TEST_EXECUTION_KEY"
+            
+            # Assuming you have the test results in JSON format in build/test-results/test/*.json
+            curl -X POST -H "Content-Type: application/json" \
+              -u "$USER_EMAIL:$API_TOKEN" \
+              --data @build/test-results/test/*.json \
+              "$JIRA_URL/rest/raven/1.0/import/execution"
+            
+            echo "Test results uploaded to Jira Xray."
 
 workflows:
   version: 2
