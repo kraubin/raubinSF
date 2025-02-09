@@ -27,7 +27,7 @@ jobs:
           name: Log into Argo CD and sync the application
           command: |
             # Log into ArgoCD using environment variables
-            argocd login $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PASSWORD --insecure
+            argocd login $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PASSWORD
             # Sync the application
             argocd app sync salesforce-auto
             # Wait for the app to be in a healthy state
