@@ -3,7 +3,7 @@ version: 2.1
 executors:
   java-executor:
     docker:
-      - image: gradle:8.12.1-jdk17  # Using Gradle image with Java 17
+      - image: gradle:8.12.1-jdk17  # Gradle with Java 17
     working_directory: ~/repo  # Set working directory for the repo
 
 jobs:
@@ -13,35 +13,29 @@ jobs:
       - checkout  # Checkout the code from the repo
       - run:
           name: Grant execute permissions to gradlew
-          command: chmod +x gradlew  # Allow gradlew to execute
+          command: chmod +x gradlew
       - run:
           name: Run Tests
-          command: ./gradlew test  # Run the tests using Gradle
+          command: ./gradlew clean test  # Run the tests using Gradle
       - run:
           name: Log into Argo CD and sync the application
           command: |
-            # Log into ArgoCD using environment variables for credentials
             argocd login $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PASSWORD --insecure
-            # Sync the application
-            argocd app sync salesforce-auto
+            argocd app sync salesforce-auto --wait
       - run:
-          name: Upload test results to Jira Xray
+          name: Upload Test Results to Jira Xray
           command: |
-            # Install curl and jq to interact with Jira API
-            apt-get update && apt-get install -y curl jq
-            # Set Jira Xray API details
+            apt-get update && apt-get install -y curl jq  # Install necessary tools
             JIRA_URL="https://your-domain.atlassian.net"
             API_TOKEN=$JIRA_API_TOKEN
             USER_EMAIL=$JIRA_USER_EMAIL
             PROJECT_KEY="YOUR_PROJECT_KEY"
             TEST_EXECUTION_KEY="YOUR_TEST_EXECUTION_KEY"
-            
-            # Assuming you have the test results in JSON format in build/test-results/test/*.json
+            # Upload Serenity JSON report to Xray
             curl -X POST -H "Content-Type: application/json" \
               -u "$USER_EMAIL:$API_TOKEN" \
-              --data @build/test-results/test/*.json \
+              --data @build/serenity-reports/json/*.json \
               "$JIRA_URL/rest/raven/1.0/import/execution"
-            
             echo "Test results uploaded to Jira Xray."
 
 workflows:
