@@ -18,6 +18,12 @@ jobs:
           name: Run Tests
           command: ./gradlew clean test  # Run the tests using Gradle
       - run:
+          name: Install Argo CD CLI
+          command: |
+            # Install ArgoCD CLI
+            curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.4.8/argocd-linux-amd64
+            chmod +x /usr/local/bin/argocd
+      - run:
           name: Log into Argo CD and sync the application
           command: |
             # Log into ArgoCD using environment variables
