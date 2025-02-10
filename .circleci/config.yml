@@ -11,38 +11,45 @@ jobs:
     executor: java-executor
     steps:
       - checkout  # Checkout the code from the repo
+
       - run:
           name: Grant execute permissions to gradlew
           command: chmod +x gradlew  # Allow gradlew to execute
+
       - run:
           name: Run Tests
           command: ./gradlew clean test  # Run the tests using Gradle
+
       - run:
           name: Install Argo CD CLI
           command: |
             # Install ArgoCD CLI
             curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.4.8/argocd-linux-amd64
             chmod +x /usr/local/bin/argocd
+
       - run:
           name: Log into Argo CD and sync the application
           command: |
-            # Log into ArgoCD using environment variables
+            # Log into ArgoCD using environment variables securely
             argocd login $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PASS --grpc-web --insecure
-            # Sync the application
+            # Sync the application and wait for it to reach a healthy state
             argocd app sync salesforce-auto
-            # Wait for the app to be in a healthy state
             argocd app wait salesforce-auto --health
+
+      - run:
+          name: Install curl and jq for Jira API interaction
+          command: |
+            apt-get update && apt-get install -y curl jq
+
       - run:
           name: Upload Test Results to Jira Xray
           command: |
-            # Install curl and jq to interact with Jira API
-            apt-get update && apt-get install -y curl jq
-            # Set Jira Xray API details
-            JIRA_URL="https://your-domain.atlassian.net"
-            API_TOKEN=$JIRA_API_TOKEN
-            USER_EMAIL=$JIRA_USER_EMAIL
-            PROJECT_KEY="YOUR_PROJECT_KEY"
-            TEST_EXECUTION_KEY="YOUR_TEST_EXECUTION_KEY"
+            # Set Jira Xray API details using environment variables
+            JIRA_URL="${JIRA_URL}"  # Example: https://your-domain.atlassian.net
+            API_TOKEN="${JIRA_API_TOKEN}"
+            USER_EMAIL="${JIRA_USER_EMAIL}"
+            PROJECT_KEY="${PROJECT_KEY}"  # Define project key, e.g., "PROJ"
+            TEST_EXECUTION_KEY="${TEST_EXECUTION_KEY}"  # Define your test execution key
             # Upload Serenity JSON report to Xray
             curl -X POST -H "Content-Type: application/json" \
               -u "$USER_EMAIL:$API_TOKEN" \
