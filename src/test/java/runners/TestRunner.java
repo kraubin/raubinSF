@@ -1,9 +1,9 @@
 package runners;
 
+import io.cucumber.core.cli.Main;
 
-import io.cucumber.junit.platform.engine.Cucumber;
-
-@Cucumber
 public class TestRunner {
-    // No need for main method or @RunWith annotation
+    public static void main(String[] args) {
+        Main.main(args); // Run Cucumber
+    }
 }

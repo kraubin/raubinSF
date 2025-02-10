@@ -1,11 +1,13 @@
-# Use an official OpenJDK image as the base
 FROM openjdk:17-jdk-slim
 
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the built JAR file from the local machine to the container
-COPY build/libs/SalesForceAuto-1.0-SNAPSHOT.jar myapp.jar
+# Copy the JAR file from the build directory to the container
+COPY build/libs/SalesForceAuto-all.jar app.jar
+
+# Copy the feature files into the container
+COPY src/test/resources /app/features
 
 # Command to run the application
-CMD ["java", "-jar", "myapp.jar"]
+ENTRYPOINT ["java", "-cp", "app.jar:/app/features", "runners.TestRunner"]
