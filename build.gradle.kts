@@ -34,8 +34,8 @@ dependencies {
     testImplementation("org.seleniumhq.selenium:selenium-java:4.14.1")
     testImplementation("io.github.bonigarcia:webdrivermanager:5.6.2")
     testImplementation("com.squareup.okhttp3:okhttp:4.10.0")
-    implementation("org.slf4j:slf4j-api:1.7.x")
-    implementation("org.slf4j:slf4j-simple:1.7.x")
+    implementation("org.slf4j:slf4j-api:1.7.31")
+    implementation("org.slf4j:slf4j-simple:1.7.32")
 }
 
 sourceSets {
