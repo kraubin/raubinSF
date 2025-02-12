@@ -57,6 +57,14 @@ jobs:
               "$JIRA_URL/rest/raven/1.0/import/execution"
             echo "Test results uploaded to Jira Xray."
 
+      - run:
+          name: Create Git Tag
+          command: |
+            TAG_NAME="v$(date +"%Y%m%d%H%M%S")"
+            git tag $TAG_NAME
+            git push origin $TAG_NAME
+            echo "Created and pushed tag $TAG_NAME"
+
 workflows:
   version: 2
   build-and-sync:
