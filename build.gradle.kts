@@ -61,10 +61,15 @@ tasks.test {
 
 tasks.withType<Test> {
     systemProperty("serenity.reports", "build/serenity-reports/json")
+    systemProperty("serenity.projectName", "Salesforce Automation")  // Set the project name dynamically here
     maxParallelForks = Runtime.getRuntime().availableProcessors()  // Configure parallel test execution
 }
 
-// ✅ Define the main class explicitly
+tasks.withType<Test> {
+    systemProperty("serenity.outputDirectory", "build/serenity-reports")
+}
+
+
 application {
     mainClass.set("runners.TestRunner")
 }
@@ -78,8 +83,6 @@ tasks.shadowJar {
         attributes["Main-Class"] = "runners.TestRunner" // Ensure this points to your TestRunner class
     }
 }
-
-
 
 tasks.jar {
     manifest {
