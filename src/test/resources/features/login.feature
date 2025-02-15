@@ -1,6 +1,7 @@
+@Xray @XSP-58
 Feature: Login to Salesforce
 
-  @Xray @XSP-58  # This links the test to Jira Xray
+  @XSP-58
   Scenario: User logs into Salesforce
     Given User is on the Salesforce login page
     When User enters valid credentials
