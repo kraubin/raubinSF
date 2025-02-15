@@ -53,23 +53,23 @@ sourceSets {
     }
 }
 
-tasks.withType<Test> {
+tasks.test {
     useJUnitPlatform()
-    systemProperty("cucumber.plugin", "json:build/reports/cucumber/cucumber.json, pretty, message:build/reports/cucumber/cucumber.ndjson")
-    //systemProperty("cucumber.plugin", "json:build/reports/cucumber/cucumber.json, pretty")
-    systemProperty("cucumber.publish.quiet", "true")
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
+    systemProperty("cucumber.options", "--plugin json:build/reports/cucumber/cucumber.json")
 }
-
 
 tasks.withType<Test> {
     maxParallelForks = Runtime.getRuntime().availableProcessors()  // Configure parallel test execution
 }
 
 tasks.withType<Test> {
-    systemProperty("serenity.outputDirectory", "build/reports/serenity")
+    systemProperty("serenity.generate.json", "true")
+    systemProperty("serenity.outputDirectory", "build/reports/cucumber")
     systemProperty("serenity.report.format", "json")
 }
-
 
 application {
     mainClass.set("runners.TestRunner")
