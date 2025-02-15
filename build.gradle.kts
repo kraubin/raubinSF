@@ -20,11 +20,13 @@ repositories {
 
 dependencies {
     // Serenity and Cucumber dependencies
-    testImplementation("net.serenity-bdd:serenity-core:3.1.5")
-    testImplementation("net.serenity-bdd:serenity-cucumber:3.1.5")
+    testImplementation("net.serenity-bdd:serenity-core:4.0.18")
+    testImplementation("net.serenity-bdd:serenity-junit5:4.0.18")
+    testImplementation("net.serenity-bdd:serenity-cucumber:4.0.18")
+    testImplementation("org.junit.vintage:junit-vintage-engine:5.10.2") // Enables JUnit 4 support
     testImplementation("io.cucumber:cucumber-core:7.14.0")
-    testImplementation("io.cucumber:cucumber-java:7.14.0")
     testImplementation("io.cucumber:cucumber-junit-platform-engine:7.14.0")
+    testImplementation("io.cucumber:cucumber-junit:7.14.0")
 
     // JUnit 5 dependencies
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
@@ -56,19 +58,18 @@ tasks.test {
     testLogging {
         events("passed", "skipped", "failed")
     }
-    systemProperty("cucumber.options", "--tags @regression --plugin json:build/cucumber-reports/cucumber.json")
+    systemProperty("cucumber.options", "--plugin json:build/reports/cucumber/cucumber.json")
 }
 
 tasks.withType<Test> {
-    systemProperty("serenity.reports", "build/serenity-reports/json")
-    systemProperty("serenity.projectName", "Salesforce Automation")  // Set the project name dynamically here
     maxParallelForks = Runtime.getRuntime().availableProcessors()  // Configure parallel test execution
 }
 
 tasks.withType<Test> {
-    systemProperty("serenity.outputDirectory", "build/serenity-reports")
+    systemProperty("serenity.generate.json", "true")
+    systemProperty("serenity.outputDirectory", "build/reports/cucumber")
+    systemProperty("serenity.report.format", "json")
 }
-
 
 application {
     mainClass.set("runners.TestRunner")

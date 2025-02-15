@@ -1,6 +1,8 @@
 Feature: Login to Salesforce
 
   Scenario: User logs into Salesforce
-    Given I am on the Salesforce login page
-    When I enter valid credentials
-    Then I should be redirected to the home page
+    Given User is on the Salesforce login page
+    When User enters valid credentials
+    And Clicks login button
+    Then User should see the homepage
+

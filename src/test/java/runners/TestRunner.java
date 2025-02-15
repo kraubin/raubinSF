@@ -1,9 +1,15 @@
 package runners;
 
-import io.cucumber.core.cli.Main;
+import net.serenitybdd.cucumber.CucumberWithSerenity;
+import io.cucumber.junit.CucumberOptions;
+import org.junit.runner.RunWith;
 
+@RunWith(CucumberWithSerenity.class)
+@CucumberOptions(
+        features = "src/test/resources/features",
+        glue = "steps", // Ensure this matches your step definitions package
+        plugin = {"json:build/reports/cucumber/cucumber.json", "pretty"}
+)
 public class TestRunner {
-    public static void main(String[] args) {
-        Main.main(args); // Run Cucumber
-    }
 }
+
