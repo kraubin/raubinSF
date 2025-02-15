@@ -21,6 +21,6 @@ public class LoginSteps {
 
     @Then("User should see the homepage")
     public void user_should_see_the_homepage() {
-        System.out.println("User is on the homepage");
+        System.out.println("User is on the homepage ROBIN");
     }
 }
