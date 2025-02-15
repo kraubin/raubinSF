@@ -58,6 +58,17 @@ jobs:
 
       # ✅ Upload Test Results to Xray Cloud with Detailed Logging
       - run:
+          name: Debug Test Results File
+          command: |
+            REPORT_PATH="build/reports/cucumber/cucumber.json"
+            if [ -f "$REPORT_PATH" ]; then
+              echo "✅ Test report found. Checking contents..."
+              cat "$REPORT_PATH"
+            else
+              echo "❌ No test report found! Ensure your tests generate a valid 'cucumber.json'."
+              exit 1
+            fi
+      - run:
           name: Upload Test Results to Xray Cloud
           command: |
             REPORT_PATH="build/reports/cucumber/cucumber.json"
