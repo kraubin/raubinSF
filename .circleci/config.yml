@@ -33,8 +33,9 @@ jobs:
               -H "Content-Type: application/json" \
               -d "{\"client_id\":\"$XRAY_CLIENT_ID\", \"client_secret\":\"$XRAY_CLIENT_SECRET\"}")
             
-            if [[ "$RESPONSE" =~ ^\"[A-Za-z0-9-_]+\.([A-Za-z0-9-_]+)\.[A-Za-z0-9-_]+\"$ ]]; then
-              XRAY_TOKEN=$(echo "$RESPONSE" | tr -d '"')
+            # Check if the response contains a valid JWT token
+            if [[ "$RESPONSE" =~ ^\"[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\"$ ]]; then
+              XRAY_TOKEN=$(echo "$RESPONSE" | tr -d '"')  # Remove quotes
               echo "export XRAY_TOKEN=$XRAY_TOKEN" >> $BASH_ENV
               echo "✅ Xray authentication successful."
             else
