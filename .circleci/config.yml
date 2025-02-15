@@ -53,7 +53,7 @@ jobs:
             # Upload Serenity JSON report to Xray
             curl -X POST -H "Content-Type: application/json" \
               -u "$USER_EMAIL:$API_TOKEN" \
-              --data @build/serenity-reports/json/*.json \
+              --data @build/reports/cucumber/*.json \
               "$JIRA_URL/rest/raven/1.0/import/execution"
             echo "Test results uploaded to Jira Xray."
 
