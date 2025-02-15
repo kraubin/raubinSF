@@ -24,18 +24,24 @@ jobs:
       - run:
           name: Authenticate with Xray Cloud
           command: |
-            RESPONSE=$(curl -X POST https://xray.cloud.getxray.app/api/v2/authenticate \
+            if [[ -z "$XRAY_CLIENT_ID" || -z "$XRAY_CLIENT_SECRET" ]]; then
+              echo "❌ Missing Xray credentials. Ensure XRAY_CLIENT_ID and XRAY_CLIENT_SECRET are set in CircleCI."
+              exit 1
+            fi
+
+            RESPONSE=$(curl -X POST "https://xray.cloud.getxray.app/api/v2/authenticate" \
               -H "Content-Type: application/json" \
-              -d "{\"client_id\": \"$XRAY_CLIENT_ID\", \"client_secret\": \"$XRAY_CLIENT_SECRET\"}")
+              -d "{\"client_id\":\"$XRAY_CLIENT_ID\", \"client_secret\":\"$XRAY_CLIENT_SECRET\"}")
 
             if [[ $RESPONSE == *"token"* ]]; then
-              XRAY_TOKEN=$(echo $RESPONSE | jq -r '.')
+              XRAY_TOKEN=$(echo $RESPONSE | tr -d '"')
               echo "export XRAY_TOKEN=$XRAY_TOKEN" >> $BASH_ENV
               echo "✅ Xray authentication successful."
             else
               echo "❌ Xray authentication failed. Response: $RESPONSE"
               exit 1
             fi
+      
 
       # Upload Test Results to Xray Cloud
       - run:
