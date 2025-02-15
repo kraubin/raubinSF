@@ -28,13 +28,13 @@ jobs:
               echo "❌ Missing Xray credentials. Ensure XRAY_CLIENT_ID and XRAY_CLIENT_SECRET are set in CircleCI."
               exit 1
             fi
-
+            
             RESPONSE=$(curl -X POST "https://xray.cloud.getxray.app/api/v2/authenticate" \
               -H "Content-Type: application/json" \
               -d "{\"client_id\":\"$XRAY_CLIENT_ID\", \"client_secret\":\"$XRAY_CLIENT_SECRET\"}")
-
-            if [[ $RESPONSE == *"token"* ]]; then
-              XRAY_TOKEN=$(echo $RESPONSE | tr -d '"')
+            
+            if [[ "$RESPONSE" =~ ^\"[A-Za-z0-9-_]+\.([A-Za-z0-9-_]+)\.[A-Za-z0-9-_]+\"$ ]]; then
+              XRAY_TOKEN=$(echo "$RESPONSE" | tr -d '"')
               echo "export XRAY_TOKEN=$XRAY_TOKEN" >> $BASH_ENV
               echo "✅ Xray authentication successful."
             else
