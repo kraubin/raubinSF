@@ -42,7 +42,6 @@ jobs:
               exit 1
             fi
       
-
       # Upload Test Results to Xray Cloud
       - run:
           name: Upload Test Results to Xray Cloud
@@ -65,7 +64,6 @@ jobs:
             else
               echo "❌ No test report found! Skipping Xray upload."
             fi
-
 
       - run:
           name: Install Argo CD CLI
