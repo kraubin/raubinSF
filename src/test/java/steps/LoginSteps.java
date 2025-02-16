@@ -6,7 +6,7 @@ public class LoginSteps {
 
     @Given("User is on the Salesforce login page")
     public void user_is_on_the_salesforce_login_page() {
-        System.out.println("Navigating to Salesforce login page");
+        System.out.println("Navigating to Salesforce login page Robin");
     }
 
     @When("User enters valid credentials")
