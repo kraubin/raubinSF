@@ -1,4 +1,4 @@
-@Xray"XSP-58"
+@Xray("XSP-58")
 Feature: Login to Salesforce
 
   Scenario: User logs into Salesforce
