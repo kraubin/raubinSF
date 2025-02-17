@@ -13,10 +13,6 @@ jobs:
       - checkout  # Checkout the code from the repo
 
       - run:
-          name: Validate CircleCI Config
-          command: circleci config validate || exit 1  # Validate config before running jobs
-
-      - run:
           name: Grant execute permissions to gradlew
           command: chmod +x gradlew  # Allow gradlew to execute
 
