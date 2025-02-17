@@ -13,6 +13,10 @@ jobs:
       - checkout  # Checkout the code from the repo
 
       - run:
+          name: Validate CircleCI Config
+          command: circleci config validate || exit 1  # Validate config before running jobs
+
+      - run:
           name: Grant execute permissions to gradlew
           command: chmod +x gradlew  # Allow gradlew to execute
 
@@ -46,9 +50,8 @@ jobs:
               -H "Content-Type: application/json" \
               -d "{\"client_id\":\"$XRAY_CLIENT_ID\", \"client_secret\":\"$XRAY_CLIENT_SECRET\"}")
 
-            # Check if the response is a valid JWT token
             if [[ $RESPONSE =~ ^\"[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\"$ ]]; then
-              XRAY_TOKEN=$(echo "$RESPONSE" | tr -d '"')  # Remove quotes
+              XRAY_TOKEN=$(echo "$RESPONSE" | tr -d '"')
               echo "export XRAY_TOKEN=$XRAY_TOKEN" >> $BASH_ENV
               echo "✅ Xray authentication successful."
             else
@@ -57,17 +60,6 @@ jobs:
             fi
 
       # ✅ Upload Test Results to Xray Cloud with Detailed Logging
-      - run:
-          name: Debug Test Results File
-          command: |
-            REPORT_PATH="build/reports/cucumber/cucumber.json"
-            if [ -f "$REPORT_PATH" ]; then
-              echo "✅ Test report found. Checking contents..."
-              cat "$REPORT_PATH"
-            else
-              echo "❌ No test report found! Ensure your tests generate a valid 'cucumber.json'."
-              exit 1
-            fi
       - run:
           name: Upload Test Results to Xray Cloud
           command: |
@@ -80,7 +72,7 @@ jobs:
                 -H "Authorization: Bearer $XRAY_TOKEN" \
                 --data @"$REPORT_PATH")
 
-              echo "Xray Response: $RESPONSE"  # Print response for debugging
+              echo "Xray Response: $RESPONSE"
 
               if [[ $RESPONSE == *"key"* ]]; then
                 echo "✅ Test results uploaded successfully to Jira Xray Cloud."
@@ -113,6 +105,7 @@ jobs:
             git tag $TAG_NAME
             git push origin $TAG_NAME
             echo "✅ Created and pushed tag $TAG_NAME"
+
 workflows:
   version: 2
   build-and-sync:
@@ -120,5 +113,4 @@ workflows:
       - build:
           filters:
             branches:
-              only:
-                - master
+              ignore: []  # Runs on all branches
