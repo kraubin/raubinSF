@@ -1,26 +1,22 @@
-version: 2.1
+version: 2.1  # ✅ Ensure correct version
 
 executors:
   java-executor:
     docker:
-      - image: gradle:8.12.1-jdk17  # Using Gradle image with Java 17
-    working_directory: ~/repo  # Set working directory for the repo
+      - image: gradle:8.12.1-jdk17
+    working_directory: ~/repo
 
 jobs:
   build:
     executor: java-executor
     steps:
-      - checkout  # Checkout the code from the repo
-
+      - checkout
       - run:
           name: Grant execute permissions to gradlew
-          command: chmod +x gradlew  # Allow gradlew to execute
-
+          command: chmod +x gradlew
       - run:
           name: Run Tests
-          command: ./gradlew clean test  # Run the tests using Gradle
-
-      # ✅ Debug Step: Ensure Cucumber JSON Exists Before Uploading
+          command: ./gradlew clean test
       - run:
           name: Debug Test Results File
           command: |
@@ -29,71 +25,58 @@ jobs:
               echo "✅ Test report found. Checking contents..."
               cat "$REPORT_PATH"
             else
-              echo "❌ No test report found! Ensure your tests generate a valid 'cucumber.json'."
+              echo "❌ No test report found!"
               exit 1
             fi
-
-      # ✅ Authenticate with Xray Cloud
       - run:
           name: Authenticate with Xray Cloud
           command: |
             if [[ -z "$XRAY_CLIENT_ID" || -z "$XRAY_CLIENT_SECRET" ]]; then
-              echo "❌ Missing Xray credentials. Ensure XRAY_CLIENT_ID and XRAY_CLIENT_SECRET are set in CircleCI."
+              echo "❌ Missing Xray credentials."
               exit 1
             fi
-
             RESPONSE=$(curl -s -X POST "https://xray.cloud.getxray.app/api/v2/authenticate" \
               -H "Content-Type: application/json" \
               -d "{\"client_id\":\"$XRAY_CLIENT_ID\", \"client_secret\":\"$XRAY_CLIENT_SECRET\"}")
-
             if [[ $RESPONSE =~ ^\"[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\"$ ]]; then
               XRAY_TOKEN=$(echo "$RESPONSE" | tr -d '"')
               echo "export XRAY_TOKEN=$XRAY_TOKEN" >> $BASH_ENV
               echo "✅ Xray authentication successful."
             else
-              echo "❌ Xray authentication failed. Response: $RESPONSE"
+              echo "❌ Xray authentication failed."
               exit 1
             fi
-
-      # ✅ Upload Test Results to Xray Cloud with Detailed Logging
       - run:
           name: Upload Test Results to Xray Cloud
           command: |
             REPORT_PATH="build/reports/cucumber/cucumber.json"
-
             if [ -f "$REPORT_PATH" ]; then
-              echo "Uploading test results to Xray Cloud..."
               RESPONSE=$(curl -X POST "https://xray.cloud.getxray.app/api/v2/import/execution/cucumber" \
                 -H "Content-Type: application/json" \
                 -H "Authorization: Bearer $XRAY_TOKEN" \
                 --data @"$REPORT_PATH")
-
               echo "Xray Response: $RESPONSE"
-
               if [[ $RESPONSE == *"key"* ]]; then
-                echo "✅ Test results uploaded successfully to Jira Xray Cloud."
+                echo "✅ Test results uploaded successfully."
               else
-                echo "❌ Xray test upload failed. Response: $RESPONSE"
+                echo "❌ Xray test upload failed."
                 exit 1
               fi
             else
-              echo "❌ No test report found! Ensure your tests generate a valid 'cucumber.json'."
+              echo "❌ No test report found!"
               exit 1
             fi
-
       - run:
           name: Install Argo CD CLI
           command: |
             curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
             chmod +x /usr/local/bin/argocd
-
       - run:
           name: Log into Argo CD and sync the application
           command: |
             argocd login $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PASS --grpc-web --insecure
             argocd app sync salesforce-auto
             argocd app wait salesforce-auto --health
-
       - run:
           name: Create Git Tag
           command: |
@@ -103,10 +86,11 @@ jobs:
             echo "✅ Created and pushed tag $TAG_NAME"
 
 workflows:
-  version: 2
+  version: 2.1  # ✅ Ensure correct version
   build-and-sync:
     jobs:
       - build:
           filters:
             branches:
-              ignore: []  # Runs on all branches
+              only:
+                - /.*/  # ✅ Runs on all branches
