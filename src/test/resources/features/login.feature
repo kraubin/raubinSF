@@ -1,4 +1,4 @@
-@Xray(XSP-58)
+@XSP-61
 Feature: Login to Salesforce
 
   Scenario: User logs into Salesforce
